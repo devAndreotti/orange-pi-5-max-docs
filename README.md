@@ -11,6 +11,7 @@ Documentação em português sobre a Orange Pi 5 Max 16 GB (SoC Rockchip RK3588)
 | [docs/03-alimentacao-refrigeracao-armazenamento.md](docs/03-alimentacao-refrigeracao-armazenamento.md) | Fonte 5 V / 5 A, cooler, microSD, eMMC, NVMe |
 | [docs/04-software-e-boot.md](docs/04-software-e-boot.md) | Sistemas, gravação de imagem, primeiro boot |
 | [docs/05-links-e-comunidade.md](docs/05-links-e-comunidade.md) | Site oficial, comunidade, reviews, fabricantes |
+| [docs/06-ssd-nvme.md](docs/06-ssd-nvme.md) | SSD NVMe: velocidade real do slot, como escolher, boot pelo NVMe, preços |
 
 ## Aviso
 
