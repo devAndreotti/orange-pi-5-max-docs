@@ -1,6 +1,6 @@
 # 02 - Hardware da Orange Pi 5 Max
 
-Este documento descreve o hardware da Orange Pi 5 Max, uma placa de desenvolvimento baseada no SoC Rockchip RK3588. Os dados vêm de fontes públicas listadas na seção "Fontes". A página oficial da Orange Pi era a fonte principal planejada, mas não respondeu durante a pesquisa (conexão recusada), então os valores abaixo foram conferidos em artigos de imprensa técnica. Antes de comprar ou projetar em cima destes números, confirme-os na página oficial.
+Este documento descreve o hardware da Orange Pi 5 Max, uma placa de desenvolvimento baseada no SoC Rockchip RK3588. Os dados da Max vêm da [ficha oficial](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-5-Max.html), lida em 03/11/2026, do manual v1.3 e do esquemático V1.1. A comparação com outras placas vem de artigos de imprensa técnica, listados em "Fontes".
 
 ## Especificações técnicas
 
@@ -10,17 +10,20 @@ Este documento descreve o hardware da Orange Pi 5 Max, uma placa de desenvolvime
 | CPU | 4x Cortex-A76 (até 2,4 GHz) + 4x Cortex-A55 (até 1,8 GHz) |
 | GPU | Mali-G610 MP4 (OpenGL ES 3.2, OpenCL 2.2, Vulkan 1.2) |
 | NPU | 6 TOPS |
-| Memória RAM | LPDDR5, 4, 8 ou 16 GB (ver divergências) |
+| Memória RAM | LPDDR5, 4, 8 ou 16 GB |
 | Ethernet | 1x 2.5GbE, chip RTL8125BG |
 | Wi-Fi / Bluetooth | Módulo AP6611: Wi-Fi 6E e Bluetooth 5.3 |
 | Vídeo | 2x HDMI 2.1, até 8K a 60 Hz, com eARC |
 | USB | 2x USB 3.0 Type-A e 2x USB 2.0 Type-A |
 | M.2 | Slot M-Key para NVMe PCIe 3.0 x4 (formato 2280) |
-| Armazenamento | Leitor microSD; socket para eMMC (32 a 256 GB) ou eMMC soldada, conforme a versão |
+| Armazenamento | Leitor microSD; soquete para eMMC (padrão, 32 a 256 GB) ou eMMC soldada (sob encomenda); QSPI NOR Flash de 16 MB |
 | GPIO | Header de 40 pinos (GPIO, UART, I2C, SPI, CAN, PWM) |
-| Alimentação | Entrada USB Type-C, 5 V / 5 A |
-| Dimensões | 89 x 57 mm |
-| Peso | cerca de 62 g |
+| Alimentação | Entrada USB Type-C, 5 V @ 5 A, fixo, sem negociação PD |
+| Botões e LED | Botão BOOT (o manual chama de MaskROM), botão liga/desliga e LED RGB lateral |
+| Ventoinha e RTC | Ventoinha: 5 V, 2 pinos, 1,25 mm. RTC: 3 V, 2 pinos, 1,25 mm |
+| Dimensões | 89 x 57 x 1,6 mm |
+| Peso | 62 g |
+| Furos de fixação | 4 furos de 2,7 mm, 58 × 49 mm entre centros, a mesma furação do Raspberry Pi |
 
 Pontos de atenção para quem vai usar a placa:
 
@@ -43,19 +46,23 @@ Os modelos Orange Pi 5 Plus e Orange Pi 5 Pro têm chips e conjuntos de portas d
 | M.2 | NVMe PCIe 3.0 x4 | NVMe PCIe 3.0 x4 | M.2 2280 com PCIe 2.0 x1 (NVMe ou SATA) |
 | eMMC | Socket ou soldada, conforme a versão | Opcional | Opcional |
 | Dimensões | 89 x 57 mm | 100 x 75 mm | 89 x 56 mm |
-| Alimentação | USB-C 5 V / 5 A | 5 V / 4 A | USB-C 5 V / 5 A |
+| Alimentação | USB-C 5 V / 5 A, sem PD | 5 V / 4 A | USB-C 5 V / 5 A |
 
 Resumo prático: a Max é a opção com Wi-Fi 6E integrado e PCIe 3.0 x4 no menor formato da linha. Quem precisa de duas portas 2.5GbE ou de entrada HDMI deve olhar a Plus. Quem quer Wi-Fi integrado e custo menor, sem precisar de alta velocidade de rede, pode olhar a Pro, que tem Wi-Fi 5 e Gigabit.
 
 ## Divergências entre fontes
 
-- **Tipo de memória RAM.** Não encontrei nenhuma fonte que diga LPDDR4X para a Max. As reviews e notícias de lançamento consultadas dizem LPDDR5 (4, 8 ou 16 GB). Uma fonte chinesa citada em buscas dizia DDR5 para a Pro e a Max, mas os artigos de imprensa dizem LPDDR5. Vale registrar que o tipo de memória deve ser confirmado na etiqueta da placa ou no datasheet do lote que você comprar.
-- **Memória da Plus.** A comparação OpenELab indica LPDDR4/LPDDR4X (versão V2.1 da placa). Não confirmei se todas as revisões da Plus usam o mesmo tipo.
-- **Página oficial.** A página oficial da Orange Pi não respondeu durante a pesquisa. Os dados da Max vêm de artigos de imprensa. Peso e dimensões aparecem em uma única fonte no caso do peso (62 g), então trate esse valor como aproximado.
+- **Tipo de memória RAM da Max:** é LPDDR5, segundo a ficha oficial e o manual (p. 11, 12 e 15). A review do tinycomputers.io cita LPDDR4X na unidade de 16 GB, o que contradiz o fabricante.
+- **Largura e peso:** a ficha oficial e o desenho mecânico dão 57 mm, e a ficha dá 62 g. O texto da p. 13 do manual diz 56 mm e 58 g.
+- **Fonte:** a ficha pede 5 V @ 5 A. Partes do manual (p. 135 e 144) e o esquemático citam 5 V/4 A. Use 5 A.
+- **Memória da Plus:** a comparação OpenELab indica LPDDR4/LPDDR4X (versão V2.1 da placa). Não confirmei se todas as revisões da Plus usam o mesmo tipo.
 
 ## Fontes
 
-- Página oficial da Orange Pi 5 Max (fonte principal planejada; não acessível na pesquisa): http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-5-Max.html
+- Ficha oficial da Orange Pi 5 Max: http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-5-Max.html
+- Manual oficial v1.3: https://drive.google.com/drive/folders/1kzMRI95yaXLbQuK86fUbs92NJ6QOYIGO?usp=sharing
+- Esquemático oficial V1.1: https://drive.google.com/file/d/1cAKUBHF2yXtmmLJaVtK17nOKoMlI02wA/view?usp=sharing
+- Desenho mecânico oficial V1.1: https://drive.google.com/file/d/1HTPhgRq5EuVlTSzSiLY6-X320II8eArF/view?usp=sharing
 - CNX Software, "Rockchip RK3588-powered Orange Pi 5 Max SBC features up to 16GB LPDDR5, 2.5GbE, onboard WiFi 6E and Bluetooth 5.3" (2024-08-01): https://www.cnx-software.com/2024/08/01/rockchip-rk3588-powered-orange-pi-5-max-sbc-features-up-to-16gb-lpddr5-2-5gbe-onboard-wifi-6e-and-bluetooth-5-3/
 - Liliputing, "Orange Pi 5 Max is a credit card sized RK3588 PC with 2.5 GbE Ethernet, PCIe 3.0 and WiFi 6E": https://liliputing.com/orange-pi-5-max-is-a-credit-card-sized-rk3588-pc-with-2-5-gbe-ethernet-pcie-3-0-and-wifi-6e/
 - Liliputing, "Orange Pi 5 Pro is a Raspberry Pi sized PC with an RK3588S chip, LPDDR5 memory and a PCIe 2.0 socket": https://liliputing.com/orange-pi-5-pro-is-a-raspberry-pi-sized-pc-with-an-rk3588s-chip-lpddr5-memory-and-a-pcie-2-0-socket/

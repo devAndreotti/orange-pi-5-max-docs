@@ -2,22 +2,11 @@
 
 Este documento reúne o que foi possível levantar sobre sistemas operacionais, gravação de imagem, ordem de boot e primeiro acesso da Orange Pi 5 Max.
 
-> **Aviso de confirmação.** O site oficial da Orange Pi não respondeu durante a pesquisa (conexão recusada), então a lista de sistemas do fabricante abaixo vem de outras fontes e precisa ser conferida na página de suporte da placa. Itens marcados como **[não confirmado]** dependem de teste ou de fonte que não foi verificada.
+> Dados de sistemas, gravação e login vêm da ficha e da página oficial de downloads, lidas em 03/11/2026, e do manual v1.3. Itens marcados como **[não confirmado]** dependem de teste ou de fonte que não foi verificada.
 
 ## 1. Sistemas operacionais
 
-O fabricante costuma listar, para a Orange Pi 5 Max, as seguintes opções:
-
-- Orange Pi OS (variante baseada em Arch)
-- Orange Pi OS (variante Droid)
-- Arch Linux
-- OH (OpenHarmony)
-- Android 13
-- Ubuntu
-- Debian
-- OpenWRT
-
-**Status desta lista:** [não confirmado] na página oficial. A lista foi informada como "listada pelo fabricante" no pedido, mas a página do fabricante não pôde ser acessada nesta pesquisa. Antes de escolher um sistema, confira na página de suporte da Max quais imagens existem, em que data foram publicadas e para qual versão de kernel.
+A [ficha oficial](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-5-Max.html) lista Orange Pi OS (Droid), Orange Pi OS (Arch), Orange Pi OS (OH), Ubuntu, Debian e Android 13. A [página de downloads](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/service-and-support/Orange-Pi-5-Max.html) também oferece OpenWRT. Veja nela a data de cada imagem antes de baixar.
 
 ### Imagens genéricas ARM podem não funcionar
 
@@ -38,8 +27,7 @@ Em um fórum da comunidade Armbian, um usuário relatou que a imagem da Orange P
 
 ### Página oficial da Orange Pi
 
-- A página de suporte da placa, no site orangepi.org, é o lugar indicado para as imagens oficiais. Um tutorial de terceiros aponta essa página como fonte das imagens. Não foi possível abri-la nesta pesquisa.
-- **[não confirmado]**: os links exatos de cada imagem e os sistemas disponíveis na data de hoje.
+- [Página oficial de downloads](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/service-and-support/Orange-Pi-5-Max.html): imagens de Ubuntu, Debian, Orange Pi OS, Android e OpenWRT, em pastas públicas do Google Drive. Os links de cada pasta estão em `13-manual-oficial-e-arquivos.md`.
 
 ### Armbian (comunidade)
 
@@ -60,8 +48,7 @@ Em um fórum da comunidade Armbian, um usuário relatou que a imagem da Orange P
 
 ### balenaEtcher
 
-- Ferramenta gráfica para Windows, Linux e macOS. Grave o arquivo `.img` (ou `.raw`) direto no microSD ou em um leitor USB.
-- **[não confirmado nesta pesquisa]**: versão atual e URL oficial. Confira no site da balena antes de instalar.
+- Ferramenta gráfica para Windows, Linux e macOS. Grave o arquivo `.img` direto no microSD, com qualquer leitor de cartão, inclusive um leitor USB OTG. O manual cita balenaEtcher, RKDevTool e Win32DiskImager no Windows (p. 21 a 37).
 
 ### dd (Linux)
 
@@ -76,42 +63,35 @@ Em um fórum da comunidade Armbian, um usuário relatou que a imagem da Orange P
 
 ## 4. Ordem de boot
 
-Há mais de uma origem possível de boot na placa: microSD, eMMC (se instalada) e NVMe. A prioridade exata da Orange Pi 5 Max não foi confirmada.
+**Ordem da BootROM, segundo o esquemático oficial V1.1 (p. 6):** SPI (FSPI M2, M1, M0), depois eMMC, depois cartão SD, depois USB. O manual não traz essa ordem.
 
-- As fontes pesquisadas se contradizem. Um tutorial da Orange Pi 5 comum cita uma ordem (SD, NVMe, eMMC) e outro cita outra (eMMC antes do microSD).
-- Em placas RK3588 parecidas, o bootloader gravado na memória SPI pode mudar a prioridade. Um relato em fórum mostra que, após atualizar o SPI, a placa passou a iniciar pelo NVMe.
-- Em outra placa RK3588 (Rock 5B), a prioridade relatada foi microSD, depois eMMC, depois SSD M.2.
-- Algumas imagens só iniciam pelo microSD e aceitam apenas a partição raiz no NVMe. Isso foi relatado para a Orange Pi 5 Pro, sem SPI.
+- **NVMe não está na lista.** Ele só dá boot por meio do bootloader gravado na SPI. O manual descreve esse método no cap. 2.6 (p. 53 a 63).
+- **Botão BOOT:** ao ligar a placa com ele pressionado, ela entra em modo MaskROM e aguarda gravação pela USB (manual, p. 56 e 57; esquemático, p. 28).
+- **Depois da BootROM:** quem decide o que iniciar é o bootloader encontrado. Ele vem da imagem gravada, então o comportamento entre microSD e NVMe pode mudar conforme a imagem. Se a SPI tiver um bootloader ruim, ela é lida primeiro. Para apagá-la, veja o cap. 2.14 do manual (p. 128) e `12-recuperacao-e-problemas.md`.
 
-**Recomendação prática:** **[não confirmado]** para a Max. Para evitar surpresas:
-
-1. Teste com um único dispositivo de boot por vez (só o microSD gravado, sem eMMC e sem NVMe com sistema).
-2. Só depois de confirmar o boot pelo microSD, teste o eMMC ou o NVMe.
-3. Anote a versão do bootloader gravado no SPI, se houver.
+**Recomendação prática:** no primeiro boot, use só o microSD gravado, sem eMMC e sem NVMe com sistema. Depois de confirmar que funciona, passe para o eMMC ou o NVMe.
 
 ## 5. Primeiro login e SSH
 
-Os passos abaixo são os padrões comuns em imagens Linux para placas ARM. **[não confirmado]** para a imagem específica que você escolher; o nome de usuário e a senha inicial mudam conforme a distribuição e devem ser lidos na documentação da imagem.
+**Login padrão das imagens Linux oficiais (manual, p. 149):** usuário `root` ou `orangepi`, ambos com a senha `orangepi`. O manual diz que o login automático no terminal vem ativado. Imagens de outros projetos, como o Armbian, têm regras próprias.
 
 1. Ligue a placa com a fonte adequada (veja a seção de problemas comuns) e um cabo de rede ligado ao roteador. Se a imagem for de servidor, o acesso pelo teclado e pela tela HDMI pode não estar disponível.
 2. Descubra o endereço IP da placa pelo painel do roteador, por ferramenta de rede (por exemplo, varredura na sub-rede) ou pelo nome de host padrão da imagem.
 3. Conecte por SSH com o usuário inicial da imagem:
-   `ssh usuario@endereco-ip`
+   `ssh orangepi@endereco-ip`
 4. Troque a senha inicial logo no primeiro acesso.
 5. Atualize o sistema e os pacotes da distribuição antes de qualquer outra configuração.
 6. Para acesso sem senha, copie sua chave pública para o arquivo de chaves autorizadas da placa e, depois, desative o login por senha no SSH. Faça isso só depois de confirmar que a chave funciona em outra sessão.
 
-**Não grave senhas reais nesta documentação.** Use sempre a senha que você define no primeiro acesso.
+**Troque a senha padrão antes de deixar a placa acessível pela rede.** Ela é pública, porque está no manual.
 
 ## 6. Problemas comuns
 
-### Fonte de alimentação insuficiente: LED vermelho e sem boot
+### Fonte de alimentação insuficiente
 
-- Sinal típico: LED vermelho aceso e nenhuma atividade de boot (sem vídeo, sem rede, sem LED de atividade).
-- A especificação de alimentação informada por usuários da Orange Pi 5 é de 5 V e 4 A. Fontes de 5 V e 2 A costumam ser fracas demais para o conjunto, com NVMe ou várias portas em uso.
-- A placa não negocia tensões mais altas por USB-PD, então uma fonte PD serve, mas em 5 V fixos.
-- **[não confirmado]** que o LED vermelho significa exatamente falta de energia nessa placa. Muitas fontes de informação sobre LED vermelho são de Raspberry Pi 5, que tem outro circuito de sinalização.
-- Antes de culpar a imagem, teste com fonte de 5 V e 4 A ou mais, de boa qualidade, com cabo USB-C adequado.
+- O manual atribui a maioria das instabilidades de inicialização à fonte. Se a placa reiniciar em loop, troque a fonte ou o cabo USB-C primeiro (p. 135).
+- A porta USB-C não negocia PD e aceita só 5 V fixos (p. 18 e 135). Use fonte com saída fixa de 5 V e 5 A. Nunca use saída acima de 5 V, porque queima a placa (p. 135).
+- O significado das cores do LED está em `12-recuperacao-e-problemas.md`.
 
 ### Falta de drivers
 
@@ -141,4 +121,7 @@ Os passos abaixo são os padrões comuns em imagens Linux para placas ARM. **[n�
 - Tutorial Altium, primeiros passos com Orange Pi 5 e RK3588: https://resources.altium.com/p/getting-started-orange-pi-5-and-rockchip-rk3588-processor
 - Linux.org, instalação de Ubuntu na Orange Pi 5 Max com eMMC e NVMe: https://www.linux.org/threads/installing-ubuntu-on-the-orange-pi-5-max-with-emmc-and-nvme.58119/latest
 - Fórum DietPi, boot por NVMe na Orange Pi 5: https://dietpi.com/forum/t/orange-pi-5-boot-from-nvme/16457?page=5
-- Página oficial da Orange Pi 5 Max (não acessível durante a pesquisa): http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-5-Max.html
+- Ficha oficial da Orange Pi 5 Max: http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-5-Max.html
+- Página oficial de downloads: http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/service-and-support/Orange-Pi-5-Max.html
+- Manual oficial v1.3: https://drive.google.com/drive/folders/1kzMRI95yaXLbQuK86fUbs92NJ6QOYIGO?usp=sharing
+- Esquemático oficial V1.1: https://drive.google.com/file/d/1cAKUBHF2yXtmmLJaVtK17nOKoMlI02wA/view?usp=sharing

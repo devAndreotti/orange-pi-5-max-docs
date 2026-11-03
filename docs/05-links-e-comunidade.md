@@ -4,7 +4,10 @@ Lista curada de links sobre a Orange Pi 5 Max. Cada URL abaixo apareceu em resul
 
 ## Site oficial
 
-- **orangepi.org** (domínio oficial). A busca não devolveu uma URL direta de página de produto ou download. Tutoriais citam uma página de suporte da placa dentro do domínio, mas o caminho completo não foi confirmado. Confira o site diretamente antes de baixar imagens.
+- [Ficha oficial da Max](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-5-Max.html) - Especificações, fotos e links das lojas oficiais.
+- [Downloads oficiais](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/service-and-support/Orange-Pi-5-Max.html) - Manual, esquemático, desenho mecânico, ferramentas e imagens.
+- [Wiki oficial](http://wiki.orangepi.org) - Documentação da marca.
+- [Imagens de terceiros](http://www.orangepi.org/orangepiwiki/index.php/Third_Party_Images) - Lista mantida pela Orange Pi.
 - [Armbian: página da placa](https://www.armbian.com/orangepi-5-max/) - Não é o site da Orange Pi, mas lista as imagens comunitárias do Armbian para a Max.
 - [Armbian: página de boards](https://www.armbian.com/boards/orangepi5-max) - Mesma placa no catálogo de boards do Armbian, com versões de imagem.
 - [Página de specs no CircuitPython](https://circuitpython.org/blinka/orange_pi_5_max/) - Resumo de CPU, memória, portas e sistemas suportados. Boa referência rápida.
@@ -17,8 +20,9 @@ Lista curada de links sobre a Orange Pi 5 Max. Cada URL abaixo apareceu em resul
 - [Armbian: builds da Max](https://forum.armbian.com/topic/49131-orange-pi-5-max-builds/) - Builds da comunidade e status da placa.
 - [Armbian: tag orangepi5-max](https://forum.armbian.com/tags/orangepi5-max) - Índice de todos os tópicos marcados com a placa.
 - [FreeBSD: suporte à Orange Pi 5 Max (RK3588)](https://forums.freebsd.org/threads/orange-pi-5-max-rockchip-3588-support.94914) - Relato de boot com edk2, M.2 detectado e Ethernet onboard sem detecção.
-- [Reddit (espelho): r/OrangePi](https://redlib.groet-infra.nl/r/Orangepi) - Espelho de terceiros do subreddit. Achei poucas threads sobre a Max; o link direto do Reddit não foi confirmado pela busca.
-- Fórum oficial e Discord da Orange Pi: não encontrei link público confirmado. Procure pelos canais sociais no site oficial.
+- [Reddit: r/OrangePI](https://www.reddit.com/r/OrangePI/) - Subreddit da marca. Poucas threads sobre a Max.
+- [Fórum oficial da Orange Pi](http://www.orangepi.org/orangepibbsen/) - Fórum em inglês da marca.
+- [Discord oficial](https://discord.gg/hE5wdMPm7z) e Telegram ([grupo 1](https://t.me/OPi_official_group), [grupo 2](https://t.me/Orange_Pi_Devices)) - Links da ficha oficial.
 
 ## Reviews e análises
 
