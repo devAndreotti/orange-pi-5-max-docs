@@ -4,29 +4,29 @@ Este documento cobre três pontos para colocar a Orange Pi 5 Max para funcionar:
 
 ## 1. Alimentação
 
-**Entrada:** USB-C, com recomendação de 5 V / 5 A (até 5 A).
+**Entrada:** USB-C, **5 V fixos**, 5 A, sem negociação USB-PD. Confirmado pela [ficha oficial](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-5-Max.html), pelo manual v1.3 (p. 13 e 18) e pelo esquemático V1.1 (p. 14).
 
-- Revendedores indicam que a versão de 16 GB exige um adaptador de pelo menos 5 A. Isso é uma declaração de revendedor, não uma especificação oficial encontrada. Confirmado como recomendação de venda; não confirmado como requisito técnico da placa.
-- Um anúncio de fonte 5 V / 5 A vendido para a placa aparece em listagens de terceiros. A mesma listagem descreve o produto como "5V4A" no texto, o que mostra que nomes de produto são pouco confiáveis; leia a especificação impressa na fonte.
+- **Sem PD.** O manual diz que a porta não negocia PD e só aceita 5 V fixos (p. 18 e 135). O esquemático confirma: os pinos CC1 e CC2 têm só resistores de 5,1 kΩ para o GND, sem controlador PD.
+- **Nunca use saída acima de 5 V.** O manual avisa que isso queima a placa (p. 135).
+- **Não alimente pela USB de um computador** (p. 136).
+- **Reinício em loop:** troque a fonte ou o cabo USB-C antes de qualquer outra coisa (p. 135).
+- **4 A ou 5 A:** a ficha e parte do manual pedem 5 A. As p. 135 e 144 e o esquemático citam 4 A. Use 5 A.
 
-**Por que fonte de 2 A ou de celular não serve:** a placa pode puxar mais corrente que 2 A em carga alta (CPU, NVMe, rede e periféricos juntos). Com corrente insuficiente, a placa pode reiniciar, travar ou limitar USB. Carregadores de celular e power banks comuns raramente entregam 5 A em 5 V. Carregadores USB-PD comuns entregam potência em tensão mais alta (9 V, 12 V, 15 V ou 20 V) e só chegam a 5 V depois de conversão; por isso um carregador "de 27 W" nem sempre é 5 V / 5 A.
+**Por que carregador de celular ou PD não serve:** sem negociação PD, o padrão USB-C oferece no máximo 3 A em 5 V. Um carregador "de 27 W" ou "de 65 W" usa PD para chegar nessa potência, em geral em tensões mais altas. Isso inclui as fontes de 27 W para Raspberry Pi 5, que usam PD para entregar 5 A. A placa até pode ligar nelas, mas fica limitada a cerca de 3 A e pode reiniciar sob carga. Essa conclusão é dedução a partir do padrão USB-C e do esquemático; não encontrei um teste publicado na Max.
 
 **O que procurar em uma fonte:**
 
-- Saída de 5,1 V ou 5 V a 5 A, escrita na etiqueta da fonte.
-- Cabo USB-C que suporte 5 A (cabo com fios finos e sem marca de corrente pode limitar a corrente mesmo com fonte boa).
-- Preferir fontes com certificação conhecida e que declarem a corrente em 5 V, não só a potência total em watts.
-
-**Suporte a USB-PD (dúvida):** há relato de que a placa não usa negociação USB-PD. Esta informação não foi confirmada por documentação oficial encontrada. Na prática, se a fonte precisar negociar um perfil PD para chegar a 5 A, a placa pode não conseguir pedir esse perfil. Teste com a fonte escolhida antes de confiar nela para carga contínua.
-
-Referência de contexto: a Raspberry Pi 5 tem comportamento parecido (sem 5 A em 5 V, o sistema limita a corrente das portas USB a 600 mA). Isso é da Raspberry Pi, não da Orange Pi; não há confirmação de que a Orange Pi 5 Max faça o mesmo.
+- Saída fixa de 5 V e 5 A, escrita na etiqueta da fonte. Nomes de produto enganam: uma listagem da fonte oficial diz "5V4A" e "5V 5A" no mesmo anúncio.
+- Cabo USB-C que suporte 5 A. Cabo com fios finos limita a corrente mesmo com fonte boa.
+- Marca com certificação conhecida.
 
 ## 2. Refrigeração
 
 **Conector de ventoinha:** conector de 5 V, 2 pinos, passo de 1,25 mm.
 
+- **Oficial (esquemático V1.1, p. 10 e 11):** pino 1 é + (5 V) e pino 2 é −. O lado negativo é chaveado por um MOSFET, comandado pelo sinal `FAN_CTL_H`, que fica em GPIO3_D1 / PWM9_M2. O manual diz que a velocidade é controlada por PWM (p. 19). Mesmo assim, confira o "+" na serigrafia antes de ligar.
 - Relato (fórum Armbian): um usuário com Orange Pi 5 Max disse que uma ventoinha ligada ao conector de 1,25 mm não respondeu em nenhuma carga de CPU. Não confirmado; pode ser fiação, polaridade ou configuração de software.
-- Não encontrei pinagem oficial confirmada para esse conector nesta pesquisa. Antes de ligar, confira o esquema oficial da placa. Não ligue ventoinha de 2 fios diretamente em pino GPIO: há relatos de que a corrente é alta demais para o pino.
+- Não ligue ventoinha em pino de sinal do conector de 40 pinos: esses pinos trabalham em 3,3 V e não foram feitos para alimentar motor. Os pinos de energia de 5 V e GND do mesmo conector servem para isso, e a placa também tem um par "5V Out" ao lado dele (manual, p. 15). Ventoinha ligada direto em 5 V fica sempre ligada, sem controle de velocidade.
 - Conector de 1,25 mm (PicoBlade, 2 pinos) existe em ventoinhas miniatura comuns. Confira o encaixe antes de comprar.
 
 **Quando um cooler é necessário:**
@@ -46,22 +46,23 @@ Referência de contexto: a Raspberry Pi 5 tem comportamento parecido (sem 5 A em
 
 ## 3. Armazenamento
 
-**microSD (boot):** o caminho mais simples para o primeiro boot. Use cartão de marca conhecida e classe rápida (A1/A2 ou superior). É o caminho de boot que as imagens oficiais costumam usar.
+**microSD (boot):** o caminho mais simples para o primeiro boot. O manual pede no mínimo 16 GB, de preferência 32 GB ou mais, classe 10 (p. 17).
 
-**eMMC:** a placa tem um socket para módulo eMMC. Módulos de 32, 64, 128 e 256 GB existem. Há divergência entre fontes sobre se a eMMC é soldada ou em socket em todas as variantes; uma fonte diz que há socket com opção de chip, outra diz que algumas variantes já vêm com eMMC instalada. Confira a variante exata antes de comprar.
+**eMMC:** a versão padrão tem soquete para módulo eMMC de 32, 64, 128 ou 256 GB. A eMMC soldada é opção sob encomenda (ficha oficial).
 
 **SSD NVMe M.2:**
 
 - Slot M.2 M-key com PCIe 3.0 x4 (Gen3). Isso vem de análises e do anúncio do fabricante.
 - Um SSD Gen4 funciona, mas fica limitado a Gen3 nesse slot.
-- Não encontrei confirmação de que o slot aceite SSD de tamanho 2280 especificamente. Verifique a especificação oficial antes de comprar.
-- Há um aviso geral de que muitas imagens não iniciam direto de NVMe em placas Orange Pi 5 (guia de James Chambers, sobre a placa base). Não verificado para a Max; pode exigir boot por microSD ou eMMC primeiro.
+- O slot aceita SSD 2280: a figura da p. 15 do manual marca o ponto de fixação "M.2 2280 Mounting PCB Nut", e o slot fica embaixo da placa.
+- SSD M.2 SATA não funciona: o slot é só NVMe.
+- O NVMe não está na ordem de boot da BootROM (esquemático V1.1, p. 6). Para dar boot por ele, é preciso gravar o bootloader na SPI. O manual descreve esse método no cap. 2.6 (p. 53 a 63).
 
 **Relato de travamento sob carga:** um usuário relatou que um SSD NVMe em uma Orange Pi 5+ travava quando o uso ficava intenso, e que o mesmo SSD funcionava sem falhas via USB. Não é relato direto da Max e não está confirmado. Em fóruns de NVMe em Raspberry Pi, há relatos de quedas de controlador ligadas a corrente insuficiente no pico. Se acontecer, teste outro SSD, verifique a fonte e procure no dmesg a mensagem de reset do controlador NVMe.
 
 ## 4. Lista mínima para o primeiro boot
 
-1. **Fonte** de 5 V / 5 A com cabo USB-C que suporte 5 A.
+1. **Fonte** com saída fixa de 5 V / 5 A e cabo USB-C que suporte 5 A. Carregador PD de celular não serve.
 2. **Armazenamento para o sistema:** cartão microSD de boa marca, ou módulo eMMC se a variante tiver socket.
 3. **Refrigeração:** case com ventoinha (N515 ou similar) ou, no mínimo, dissipador. Para carga contínua, use ventoinha.
 4. **Para administrar sem monitor:**
@@ -71,6 +72,9 @@ Referência de contexto: a Raspberry Pi 5 tem comportamento parecido (sem 5 A em
 
 ## Fontes
 
+- Ficha oficial: http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-5-Max.html
+- Manual oficial v1.3: https://drive.google.com/drive/folders/1kzMRI95yaXLbQuK86fUbs92NJ6QOYIGO?usp=sharing
+- Esquemático oficial V1.1: https://drive.google.com/file/d/1cAKUBHF2yXtmmLJaVtK17nOKoMlI02wA/view?usp=sharing
 - Tinytronics, Orange Pi 5 Max 16 GB (requisito de adaptador de 5 A declarado pelo revendedor): https://www.tinytronics.nl/en/development-boards/single-board-computers/orange-pi-5-max-rk3588-16gb
 - Newegg, listagem de fonte 5 V / 5 A para Orange Pi 5 Max: https://www.newegg.com/p/2S7-09MK-007U9
 - Armbian Forum, relato de ventoinha no conector de 1,25 mm da Orange Pi 5 Max: https://forum.armbian.com/topic/50442-pwm-fan-connector-not-working-on-orange-pi-5-max

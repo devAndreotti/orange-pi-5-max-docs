@@ -3,8 +3,8 @@
 ## Ordem sugerida
 
 1. **Placa**, de vendedor com nota fiscal, Compra Garantida (Mercado Livre) e campo "Enviado de" conferido.
-2. **Fonte USB-C 5 V / 5 A**. Sem ela a placa não liga.
-3. **microSD A1/A2 de 32 GB ou mais**, ou eMMC, para o sistema.
+2. **Fonte USB-C com saída fixa de 5 V / 5 A**. A porta não negocia PD, então carregador PD de celular ou fonte de 27 W para Raspberry Pi 5 não serve.
+3. **microSD classe 10 de 32 GB ou mais** (A1/A2 é melhor), ou eMMC, para o sistema. O manual pede no mínimo 16 GB.
 4. **Refrigeração**: ventoinha ou case com cooler, depois de confirmar o furo e o conector.
 5. **Case e SSD NVMe**, se necessários, depois que a placa estiver em mãos.
 
@@ -13,8 +13,9 @@ Acessório sozinho não serve para testar. Os itens 2 a 5 só mostram seu efeito
 ## Armadilhas comuns
 
 - **Foto de 16 GB com preço de 4 GB.** Confira a RAM na ficha técnica antes de pagar.
-- **Fonte de celular ou de 2 A.** Não dá boot. Exija 5 V / 5 A na etiqueta.
-- **Case de outro modelo.** Muitos cases "para Max" são de Pro ou Plus. Confira o furo de montagem.
+- **Fonte de celular, PD ou de 2 A.** Pode não ligar ou reiniciar sob carga. Exija saída fixa de 5 V / 5 A na etiqueta, e nunca acima de 5 V, porque queima a placa.
+- **Case ou cooler de Raspberry Pi 5.** Não servem: a placa tem outra medida (89 × 57 mm), portas diferentes e não tem os furos do cooler do Pi 5.
+- **Case de outro modelo.** Muitos cases "para Max" são de Pro ou Plus. Confira o furo de montagem e os recortes.
 - **Preço com imposto de importação.** Compras de fora podem pagar impostos. Confira o total antes de finalizar.
 - **Anúncio com poucas avaliações.** Um vendedor com pouco histórico exige mais cuidado. Grave o unboxing desde a abertura da caixa.
 - **SSD Gen4 pago à toa.** O slot é PCIe 3.0.
