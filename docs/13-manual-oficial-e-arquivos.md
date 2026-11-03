@@ -68,7 +68,20 @@ Arquivo oficial `OPI 5 MAX V1_1_SCH.pdf`, 29 páginas, revisão V1.1 (link na ta
 
 Arquivo oficial `OPi_5_Max_V1_1-DXF.pdf`, 2 páginas (referência inferior e superior), em vetor (link na tabela acima). O contorno da placa no desenho mede 89,0 mm × 57,0 mm na escala real do PDF.
 
-O arquivo não traz cotas em texto. Por isso, a distância entre os furos não está registrada aqui: uma tentativa de medi-la pela geometria deu valores inconsistentes e foi descartada. Para medir, abra o PDF em um editor vetorial, como o Inkscape.
+**Cotas oficiais, em mm (vista superior do desenho):**
+
+| Medida | Valor |
+|---|---|
+| Placa | 89 × 57 |
+| Entre os furos, no comprimento | 58 |
+| Entre os furos, na largura | 49 |
+| Do furo até a borda das portas USB e Ethernet | 23,5 |
+| Do furo até a borda das saídas HDMI | 3,5 |
+| Do furo até a borda oposta às portas USB (calculado) | 7,5 |
+| Do furo até a borda do conector de 40 pinos (calculado) | 4,5 |
+| Diâmetro dos 4 furos (manual, p. 16) | 2,7 |
+
+**Comparação com o Raspberry Pi 5:** o [desenho oficial do Pi 5](https://datasheets.raspberrypi.com/rpi5/raspberry-pi-5-mechanical-drawing.pdf) traz os mesmos 58 × 49 mm, os mesmos furos de 2,7 mm e os mesmos 23,5 mm até a borda das portas USB e Ethernet (85 − 3,5 − 58). A Max tem 4 mm a mais na ponta oposta às portas e 1 mm a mais na largura. Por isso, espaçadores, bases abertas e suportes no padrão do Raspberry Pi devem servir. Case fechado de Pi 5 não serve: os recortes não batem, porque a Max tem HDMI de tamanho normal, e o conector USB-C e as portas ficam em outras posições. Essa comparação é leitura dos dois desenhos, sem teste físico.
 
 ### 1.6. Wiki, fórum e canais oficiais
 
@@ -173,7 +186,7 @@ Todas as respostas usam o manual da **Orange Pi 5 Max** (v1.3). Não usei o manu
 ### 6. Qual a distância e o diâmetro dos furos de montagem? Medidas exatas da placa.
 
 - **Diâmetro dos furos:** **2,7 mm**, "The diameter of the four positioning holes is 2.7mm" (p. 16). São quatro furos.
-- **Distância entre furos:** não registrada. O manual não traz a cota, e o desenho mecânico oficial (seção 1.5) não tem cotas em texto.
+- **Distância entre furos:** **58 mm × 49 mm**, segundo as cotas do desenho mecânico oficial. Veja a tabela na seção 1.5.
 - **Dimensões da placa:** **89 mm × 57 mm × 1,6 mm**, segundo a ficha oficial e o contorno do desenho mecânico. O texto da p. 13 do manual diz 56 mm, o que parece erro do manual, porque a figura da p. 15 mostra 57 mm. Peso de **62 g** na ficha (58 g na p. 13).
 
 ### 7. Conector da ventoinha: pinos, tensão, controle por PWM?
@@ -183,6 +196,9 @@ Todas as respostas usam o manual da **Orange Pi 5 Max** (v1.3). Não usei o manu
 - **Controle:** velocidade e liga/desliga pelo **PWM** da própria placa (p. 19).
 - **Ordem dos pinos:** **pino 1 é + (5 V) e pino 2 é −**. O lado negativo é chaveado por um MOSFET (Q11), comandado pelo sinal `FAN_CTL_H` (esq. p. 11). Mesmo assim, confira o "+" na serigrafia antes de ligar.
 - **Sinal de controle:** `FAN_CTL_H` fica em GPIO3_D1 / PWM9_M2 (esq. p. 10). O kernel mainline usa `pwm9` para a ventoinha (`rk3588-orangepi-5-compact.dtsi`).
+- **Posição física:** no desenho mecânico oficial, o pino 1 da ventoinha fica do lado do furo de canto, e o pino 2 do lado do botão BOOT.
+- **Conector RTC:** pino 1 é + e pino 2 é − (esq. p. 11). No desenho mecânico, o pino 1 fica do lado das portas USB. O conector é de 3 V, 2 pinos, 1,25 mm. Um diodo duplo (BAT54C) separa a bateria da alimentação da placa, então o esquema não carrega a bateria: use pilha comum de 3 V com esse conector.
+- **Conector "5V Out" (J3):** pino 1 é +5 V e pino 2 é GND (esq. p. 11).
 
 ### 8. Usuário e senha padrão da imagem oficial (só se o manual informar).
 
@@ -206,9 +222,7 @@ Todas as respostas usam o manual da **Orange Pi 5 Max** (v1.3). Não usei o manu
 
 ## Lacunas
 
-- **Distância entre os furos de montagem:** não registrada. Medir no desenho mecânico oficial (seção 1.5).
-- **Parafuso e espaçador do M.2:** a figura da p. 15 mostra a porca soldada na placa para SSD 2280 ("M.2 2280 Mounting PCB Nut"). Nada confirma se o parafuso vem junto, nem a medida dele.
-- **Polaridade do conector RTC:** o esquemático (esq. p. 11) mostra o conector de 2 pinos, mas o texto extraído não traz a numeração. Confira a serigrafia antes de ligar.
+- **Parafuso do M.2:** a figura da p. 15 mostra a porca soldada na placa para SSD 2280 ("M.2 2280 Mounting PCB Nut"). O manual só diz "secure it in place" e não lista parafuso nos acessórios (p. 17 a 20). Nenhuma fonte lida diz se o parafuso vem na caixa nem a medida dele. Procurado na ficha oficial, no fórum Armbian e em buscas de unboxing, em 03/11/2026. O padrão M.2 costuma usar parafuso M2, mas isso não foi confirmado para a Max. Tenha um kit de parafusos M2 à mão.
 
 ---
 
@@ -218,6 +232,7 @@ Todas as respostas usam o manual da **Orange Pi 5 Max** (v1.3). Não usei o manu
 - Página oficial de downloads: http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/service-and-support/Orange-Pi-5-Max.html
 - Esquemático oficial V1.1: https://drive.google.com/file/d/1cAKUBHF2yXtmmLJaVtK17nOKoMlI02wA/view?usp=sharing
 - Desenho mecânico oficial V1.1: https://drive.google.com/file/d/1HTPhgRq5EuVlTSzSiLY6-X320II8eArF/view?usp=sharing
+- Desenho mecânico oficial do Raspberry Pi 5: https://datasheets.raspberrypi.com/rpi5/raspberry-pi-5-mechanical-drawing.pdf
 - Device tree no kernel mainline: https://raw.githubusercontent.com/torvalds/linux/master/arch/arm64/boot/dts/rockchip/rk3588-orangepi-5-compact.dtsi
 - https://macrogroup.ru/upload/iblock/7d7/v2e2xfzmvyofdk60kwwfixzqcefyi09a/OrangePi_5_Max_RK3588_User-Manual_v1.3.pdf (manual v1.3 lido, cópia de distribuidor)
 - https://github.com/orangepi-xunlong (página da organização, repositórios fixados)

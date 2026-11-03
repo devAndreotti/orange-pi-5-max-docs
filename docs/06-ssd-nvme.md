@@ -2,7 +2,7 @@
 
 ## O que o slot aceita
 
-- Conector **M.2 M-Key**, tamanho **2280** (22 mm × 80 mm), embaixo da placa. A figura da p. 15 do manual marca o ponto de fixação "M.2 2280".
+- Conector **M.2 M-Key**, tamanho **2280** (22 mm × 80 mm), embaixo da placa. A figura da p. 15 do manual marca o ponto de fixação "M.2 2280". Nenhuma fonte diz se o parafuso vem na caixa: tenha um kit de parafusos M2 à mão.
 - Interface **PCIe 3.0 x4** (Gen3, 4 vias). Só **NVMe**. SSD M.2 SATA (anúncios com "SATA" ou "NGFF") não funciona.
 - SSD Gen4 funciona, mas roda na velocidade do Gen3.
 
@@ -14,7 +14,7 @@ Na própria Max, a medição publicada por Jeff Geerling (sbc-reviews, issue 49)
 
 Para servidor acessado pela rede, o limite real costuma ser a rede: a porta de 2,5 Gb/s transfere cerca de 280 MB/s. Qualquer NVMe Gen3 já passa disso.
 
-A review do tinycomputers.io cita 5,7 GB/s de leitura na Max. O número está acima do teto do PCIe 3.0 x4 e provavelmente reflete cache; não use como referência.
+A review do tinycomputers.io cita 5,7 GB/s de leitura na Max. Esse número não é a velocidade do SSD: o link PCIe 3.0 x4 não passa de cerca de 3,9 GB/s. A causa mais provável é leitura vinda do cache na RAM. Detalhes em `11-desempenho-temperatura-consumo.md`.
 
 ## Como escolher
 

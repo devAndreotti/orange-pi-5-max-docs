@@ -23,7 +23,7 @@ Coleta feita em 03/11/2026. Este documento reúne números publicados por tercei
 - **Consumo com SSD**: um comentário de 18/04/2026 na issue #49 relata cerca de 1 W em ociosidade sem SSD e cerca de 5 W com SSD NVMe ligado. É um relato, sem ferramenta nem método informados.
 - **Temperatura**: com refrigeração ativa, o SoC ficou perto de 66 a 68 °C em carga moderada. O manual mostra sensores e o comando para lê-los (p. 221–222). Os trips do kernel para o RK3588 são alerta passivo em 85 °C e crítico em 115 °C [RK3588, kernel mainline]. Não há medição da Max sem refrigeração.
 - **Rede**: iperf3 em 2,5 GbE deu 2,35 Gbps de envio, mas só 773 Mbps de recebimento na configuração padrão (issue #49). Wi-Fi deu 297 Mbps de envio e 176 Mbps de recebimento (issue #49). Detalhes na seção 6.
-- **Armazenamento**: NVMe com iozone deu 1,04 GB/s de leitura sequencial e 2,26 GB/s de escrita (issue #49). O número de leitura de 5,7 GB/s continua suspeito. microSD deu 60 MB/s de leitura sequencial (issue #49). eMMC não tem medição.
+- **Armazenamento**: NVMe com iozone deu 1,04 GB/s de leitura sequencial e 2,26 GB/s de escrita (issue #49). A leitura de 5,7 GB/s de outra review é inválida, porque passa do limite do link PCIe. microSD deu 60 MB/s de leitura sequencial (issue #49). eMMC não tem medição.
 - **GPU**: glmark2-es2 deu 770 pontos com o Mali-G610 (issue #49). Só há um teste, sem outra placa no mesmo sistema para comparar.
 
 ## 1. Desempenho de CPU
@@ -38,7 +38,7 @@ Coleta feita em 03/11/2026. Este documento reúne números publicados por tercei
 | AI Benchmark: 510 pts | Configuração de fábrica, mesmo sistema | [Max] | SkatterBencher #89 | 23/08/2025 |
 | 7-Zip (sbc-bench): 15.960 multinúcleo, 2.994 núcleo único | Kernel 6.1, Bullseye, clocks 2.280/1.800 MHz; data não informada | [Max] | sbc-bench, Results.md | Data não informada na página |
 | 7-Zip (sbc-bench): 16.780 multinúcleo, 2.689 núcleo único | Kernel 5.10, Jammy, clocks 2.400/1.800 MHz | [placa irmã: Orange Pi 5] | sbc-bench, Results.md | Data não informada na página |
-| Sysbench CPU: 13.688,80 eventos/s (10 s), 136.916 eventos no total | Resfriamento ativo; número de threads não informado no resumo | [Max] | TinyComputers, review | 20/09/2025 |
+| Sysbench CPU: 13.688,80 eventos/s (10 s), 136.916 eventos no total | Resfriamento ativo; número de threads não informado no resumo | [Max, inválido] | TinyComputers, review | 20/09/2025 |
 | Geekbench 6 com overclock: ganho de cerca de 3,7% (só governors), 8,3% (memória OC), 27,2% (PVTPLL com tensão aumentada), 22,4% (overclock manual) | Ganhos em relação ao padrão, média geométrica; overclock não é a configuração padrão | [Max] | SkatterBencher #89 | 23/08/2025 |
 
 Observações:
@@ -201,7 +201,14 @@ Observações:
 | Slot M.2 M-Key PCIe 3.0 x4 e slot de microSD (TF) | Especificação de fábrica (manual v1.3, p. 12–13) | [Max] | Manual v1.3 | Manual v1.3 |
 | eMMC: soquete para módulos de 32 a 256 GB ou eMMC soldada na placa | Especificação de fábrica; sem velocidade | [Max] | CNX Software, lançamento | 01/08/2024 |
 
-**Valor suspeito: NVMe leitura de 5,7 GB/s.** O manual confirma PCIe 3.0 x4 no slot M.2 (p. 12–13). O teto teórico desse link é de cerca de 3,94 GB/s (8 GT/s por pista, 4 pistas, codificação 128b/130b). Um valor acima disso só seria possível com erro de medição, cache do sistema ou outra falha de método. A fonte não diz como mediu. A medição de iozone da issue #49, na mesma placa, deu cerca de 1,04 GB/s de leitura sequencial, e não reproduz o 5,7 GB/s. Por isso, o número não deve ser usado como resultado válido. A escrita de 2,1 GB/s é plausível e está dentro do limite do barramento.
+**Valor inválido: NVMe leitura de 5,7 GB/s.** Não é a velocidade do SSD, porque o teto do link PCIe 3.0 x4 é de cerca de 3,94 GB/s (8 GT/s por pista, 4 pistas, codificação 128b/130b). A causa mais provável é leitura vinda do cache do sistema na RAM. Evidências:
+
+- A review não diz qual ferramenta usou. Foram lidos o texto inteiro e o [dmesg publicado](https://tinycomputers.io/data/opi-5-max-dmesg.txt), que mostra só o link PCIe ativo e o NVMe em kernel 6.1.115-vendor.
+- 5,7 GB/s fica acima do link e abaixo da cópia de memória da mesma placa (cerca de 12 GB/s, tinymembench, issue #49). É a faixa de uma leitura em cache.
+- A medição de iozone da issue #49 deu 1,04 GB/s. Esse teste usa a opção `-I`, que evita o cache ([script](https://raw.githubusercontent.com/geerlingguy/pi-cluster/master/benchmarks/disk-benchmark.sh)).
+- A mesma review traz outros números errados: RAM LPDDR4X, contra LPDDR5 do fabricante, e 0,10 GB/s de banda de memória.
+
+Sem o método do autor, a causa não pode ser provada. O número não deve ser usado. A escrita de 2,1 GB/s é plausível e está dentro do limite do barramento.
 
 Armazenamento da Max sem medição: eMMC. O guia do linux.org sobre eMMC e NVMe na Max tem uma seção de velocidades, mas a página respondeu com um desafio de verificação (Cloudflare) nesta coleta. Não foi aberta nem contornada. Fichas de vendedores de módulos eMMC (com "até 400 MB/s") são números de marketing, sem teste na Max, e não foram usadas.
 
@@ -211,7 +218,7 @@ Para confirmar o link PCIe negociado com um NVMe na Max, rode `lspci -vv` e leia
 
 1. **Tipo de RAM**: LPDDR4X (TinyComputers) contra LPDDR5 (manual v1.3, SkatterBencher e anúncio). Erro da review: o manual confirma LPDDR5.
 2. **Largura de banda de RAM**: 0,10 GB/s do TinyComputers, com método não descrito, contra cerca de 12 GB/s de cópia do tinymembench na issue #49 (mesma placa, modelo de 8 GB). Considerar suspeito.
-3. **NVMe leitura**: 5,7 GB/s do TinyComputers, acima do teto de PCIe 3.0 x4, contra 1,04 GB/s de leitura sequencial do iozone na issue #49. Considerar suspeito.
+3. **NVMe leitura**: 5,7 GB/s do TinyComputers, acima do teto de PCIe 3.0 x4, contra 1,04 GB/s de leitura sequencial do iozone na issue #49. O valor do TinyComputers é inválido.
 4. **7-Zip**: 15.230 MIPS (SkatterBencher) contra 15.960 (sbc-bench). Métricas ou configurações diferentes.
 5. **Consumo sob carga**: 10 a 21 W (SkatterBencher, CPU) e 9,9 a 12,8 W (issue #49) contra 15 a 25 W (TinyComputers). Condições diferentes.
 6. **Temperatura**: cerca de 37 °C (SkatterBencher, carga de CPU) contra cerca de 66 °C (TinyComputers, carga moderada com ventilador). Condições diferentes.

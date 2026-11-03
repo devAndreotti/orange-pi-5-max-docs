@@ -19,6 +19,7 @@ Documentação em português sobre a Orange Pi 5 Max 16 GB (SoC Rockchip RK3588)
 | [docs/11-desempenho-temperatura-consumo.md](docs/11-desempenho-temperatura-consumo.md) | Números medidos: CPU, GPU, rede, armazenamento, temperatura, consumo |
 | [docs/12-recuperacao-e-problemas.md](docs/12-recuperacao-e-problemas.md) | Diagnóstico e recuperação: MaskROM, SPI, serial, Wi-Fi, NVMe |
 | [docs/13-manual-oficial-e-arquivos.md](docs/13-manual-oficial-e-arquivos.md) | Links oficiais, resumo do manual e respostas com base no manual e no esquemático |
+| [docs/14-testes-na-placa-real.md](docs/14-testes-na-placa-real.md) | Comandos para confirmar na placa o que nenhuma fonte pública respondeu |
 
 ## Aviso
 

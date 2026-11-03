@@ -40,7 +40,7 @@ Este documento cobre três pontos para colocar a Orange Pi 5 Max para funcionar:
 
 - **Geekworm N515** (vendido também como eleUniverse em algumas lojas): a página do fabricante diz que o case é projetado para Orange Pi 5 Pro, 5 Max e 5 Ultra, e que foi testado e é compatível com a 5 Max. O cooler de CPU do N515 é um pouco menor na Max, porque o case foi lançado antes da placa. Isso é declaração do fabricante.
 - O kit inclui uma ventoinha 5 V (modelo 3010) e quatro dissipadores de alumínio.
-- Outros cases de terceiros existem para o layout da Pi 5 Pro/N515; confirme as medidas de furação e de altura antes de comprar.
+- Outros cases de terceiros existem para o layout da Pi 5 Pro/N515; confirme os recortes e a altura antes de comprar. A furação é de 58 × 49 mm, igual à do Raspberry Pi, então base aberta ou espaçadores desse padrão devem servir. Case fechado de Raspberry Pi 5 não serve, porque os recortes não batem.
 
 **Aviso:** o cooler da N515 é um pouco menor na Max. Na prática, pode cobrir menos área de dissipação; se a temperatura em carga for alta, considere dissipador maior ou ventoinha mais forte.
 

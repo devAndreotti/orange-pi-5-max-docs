@@ -315,15 +315,16 @@ Depois de ligar a placa, a saída do boot aparece no terminal. [oficial: manual 
 
 - Conector de **2 pinos, passo 1,25 mm**, para ventoinha de **5 V**. [oficial: manual v1.3, p. 15 (rótulo "Fan (5V)") e p. 19]
 - A ventoinha pode ser ligada, desligada e ter a velocidade ajustada por PWM. [oficial: manual v1.3, p. 19]
-- Ordem dos pinos: **pino 1 é + (5 V) e pino 2 é −**. O lado negativo é chaveado por um MOSFET, comandado por `FAN_CTL_H`. [oficial: esquemático V1.1, p. 11] Confira o "+" na serigrafia antes de ligar.
+- Ordem dos pinos: **pino 1 é + (5 V) e pino 2 é −**. O lado negativo é chaveado por um MOSFET, comandado por `FAN_CTL_H`. [oficial: esquemático V1.1, p. 11] No desenho mecânico oficial, o pino 1 fica do lado do furo de canto, e o pino 2 do lado do botão BOOT.
 - Versões do Linux com o suporte à ventoinha: a tabela de funções lista "FAN Interface" como OK em Ubuntu/Debian (Linux 5.10 e 6.1). [oficial: manual v1.3, p. 146 e p. 147]
 
 ## 8. Conector da bateria RTC
 
 - Conector de **2 pinos, passo 1,25 mm**, rotulado **"RTC Connector (3V 2Pin 1.25mm)"** na vista da placa. [oficial: manual v1.3, p. 15]
 - Tensão: **3 V**. [oficial: manual v1.3, p. 15]
-- Polaridade (qual pino é + e qual é -) e tipo de bateria recomendado: **não confirmado**. A imagem da p. 15 não mostra a numeração. Confirme na serigrafia da placa antes de ligar.
-- O "RTC Chip" aparece nas tabelas de funções. Não confirmado como tratar o RTC interno. [oficial: manual v1.3, p. 146 e p. 147]
+- Polaridade: **pino 1 é + e pino 2 é −**. [oficial: esquemático V1.1, p. 11] No desenho mecânico oficial, o pino 1 fica do lado das portas USB.
+- Bateria: pilha comum de 3 V com conector de 2 pinos e 1,25 mm. O esquema mostra um diodo duplo (BAT54C) entre a bateria e a alimentação da placa, então ela não é carregada. O relógio é o chip HYM8563. [oficial: esquemático V1.1, p. 11] O manual não indica um modelo de pilha.
+- O "RTC Chip" aparece nas tabelas de funções como suportado. [oficial: manual v1.3, p. 146 e p. 147]
 - Não confunda com o RTC externo ligado ao I2C do 40 pinos (exemplo DS1307, p. 268). [oficial: manual v1.3, p. 268]
 
 ## 9. Divergências entre fontes
@@ -338,7 +339,6 @@ Depois de ligar a placa, a saída do boot aparece no terminal. [oficial: manual 
 ## 10. Lacunas (o que continua sem resposta)
 
 - Ordem física dos pinos da ventoinha (+ e -). Procurado no manual (seção 7 e imagem da p. 19): não consta.
-- Polaridade do conector RTC. Procurado no manual (p. 15 e imagem): não consta.
 - Corrente máxima dos pinos 3,3 V e 5 V. Procurado no manual (p. 223 a 228): não consta.
 - Tolerância dos GPIO a 5 V. Procurado no manual: não consta.
 - Canal PWM do ventilador. Procurado no manual (seção 7): não consta.

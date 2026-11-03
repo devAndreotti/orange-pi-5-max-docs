@@ -21,7 +21,7 @@ Regra geral: a NPU é do SoC RK3588, então a parte de hardware e software de NP
 - A conversão de modelos roda num PC Ubuntu x86-64, não na placa [oficial, manual v1.3, p. 360 e 385].
 - Medições de LLM numa Max: o manual oficial traz uma tabela de desempenho RKLLM feita na própria placa (seção 4), com a ressalva de que o texto do PDF embaralha as colunas. A review independente mediu TinyLlama 1.1B quantizado em cerca de **20,2 tokens/s** em três rodadas [comunidade/Max]. A mesma família de fontes diz que a faixa esperada da Rockchip é 10–15 tokens/s, mas esse número não foi medido pelo autor [comunidade/Max]. Isso é uma divergência, detalhada na seção 9.
 - Rodar Ollama ou llama.cpp usa a **CPU** (A76), não a NPU. Não achei medição de Ollama nem de llama.cpp numa Max, nem de Ollama numa RK3588 de 16 GB. Em outra placa RK3588 (Turing Pi RK1, 32 GB), o llama.cpp fez cerca de 22,6 tokens/s num modelo 1.5B Q4_K_M, com só 4 threads [placa irmã: Turing Pi RK1].
-- Para visão, o PhotonVision mediu YOLO no RKNN numa Orange Pi 5 com RK3588: cerca de 15 a 23 ms por inferência, conforme o modelo (YOLOv5 a YOLOv11, int8) [placa irmã: Orange Pi 5, variante não informada]. A documentação do Frigate dá 20–40 ms para yolov8n numa Orange Pi 5 Plus [placa irmã]. Não achei medição de YOLO numa Max.
+- Para visão, o PhotonVision mediu YOLO no RKNN numa Orange Pi 5 com RK3588: cerca de 15 a 23 ms por inferência, conforme o modelo (YOLOv5 a YOLOv11, int8) [placa irmã: Orange Pi 5, variante não informada]. A documentação do Frigate dá 20–40 ms para yolov8n numa Orange Pi 5 Plus [placa irmã]. A tabela oficial do rknn_model_zoo traz FPS de YOLO no RK3588 com um núcleo da NPU (yolov8n INT8 a 76,3 FPS; yolo11n a 64,0 FPS; yolov5s a 49,1 FPS), sem identificar a placa [oficial, seção 7]. Não achei medição de YOLO numa Max.
 - Com 16 GB, a Max cabe confortavelmente modelos de 1B a 4B no NPU, e até 6B nos números da tabela oficial da Rockchip. Modelos de 7B e 8B não aparecem em nenhuma medição de NPU que eu tenha lido para RK3588 [não confirmado: procurei em README, changelog, tabela de benchmark e buscas].
 
 ---
@@ -159,7 +159,7 @@ Leitura prática: para rodar RKLLM hoje, o caminho é o driver vendor. O rocket 
 
 **Como funciona [oficial/comunidade]:** o Ollama e o llama.cpp padrão rodam no CPU do RK3588. Eles não usam o NPU. O CPU da Max tem 4 núcleos Cortex-A76 (até 2,256 GHz) e 4 Cortex-A55 (1,8 GHz) [comunidade/Max].
 
-**Medição na Max [comunidade/Max]:** não achei nenhuma medição de Ollama nem de llama.cpp numa Orange Pi 5 Max. A review só traz sysbench (13.688 eventos/s, em 10 s) e não testa LLM por CPU. A busca por "llama.cpp RK3588 Orange Pi 5 Max" também não achou resultado da Max.
+**Medição na Max [comunidade/Max]:** não achei nenhuma medição de Ollama nem de llama.cpp numa Orange Pi 5 Max. A review só traz sysbench (13.688 eventos/s, em 10 s) e não testa LLM por CPU. A busca por "llama.cpp RK3588 Orange Pi 5 Max" também não achou resultado da Max. Nas issues do repositório llama.cpp, a busca por "orange pi 5 max" e "RK3588" levou à issue #722 ("Rockchip RK3588 perf", fechada), com relatos de 2023. Não são da Max: um modelo 7B Q5_1 a cerca de 1 token/s, com 7 threads, em estimativa sem benchmark formal [placa irmã: Orange Pi 5 de 16 GB], e cerca de 500 ms por token com 4 threads, sem placa informada no comentário [placa irmã: não informada]. Não trazem versão de build, então servem só como ordem de grandeza. Fonte: https://github.com/ggml-org/llama.cpp/issues/722
 
 **Medição em placa irmã [placa irmã: Turing Pi RK1, RK3588, 32 GB, Ubuntu 22.04 ARM64]:** llama.cpp (build 10134, commit `42fc24306`), 4 threads (`-t 4`), prompt de 1024 tokens e geração de 256 tokens, 5 repetições. Os valores de geração em tokens/s:
 
@@ -177,7 +177,7 @@ Observações: o artigo diz que a medição é inferência GGUF no CPU do RK3588
 
 **Outra fonte de CPU, fraca [comunidade, placa "Orange Pi 5" sem variante]:** um post de visão geral cita 11,3 tokens/s para TinyLlama com llama.cpp em CPU, e 6–7 tokens/s para Phi-3 Mini. Não diz variante da placa, quantização, threads nem versão do software, então não usei como medição.
 
-**Ollama [não confirmado]:** procurei por "Ollama RK3588 tokens/s" e por Orange Pi com Llama 3.2 3B. Não achei número de Ollama em nenhuma RK3588, nem nas buscas gerais por Orange Pi 5 Max, nem no artigo da Turing Pi (que cita Ollama só na instalação). O Ollama empacota o llama.cpp, então o número do RK1 serve só como ordem de grandeza.
+**Ollama [não confirmado]:** procurei por "Ollama RK3588 tokens/s" e por Orange Pi com Llama 3.2 3B. Não achei número de Ollama em nenhuma RK3588, nem nas buscas gerais por Orange Pi 5 Max, nem no artigo da Turing Pi (que cita Ollama só na instalação). O Ollama empacota o llama.cpp, então o número do RK1 serve só como ordem de grandeza. Nas issues do ollama/ollama, a busca por "orange pi 5" e "rk3588" achou pedidos de suporte ao NPU da RK3588, como a issue #5001 (de 12/06/2024, que só pede o suporte), e nenhuma medição de tokens/s na placa. Fonte: https://github.com/ollama/ollama/issues/5001
 
 **Consequência para a Max:** com 16 GB, o CPU consegue modelos de 7B em Q4 a cerca de 5 tokens/s (medição de placa irmã), o que é lento para uso interativo. Para 1B a 3B, o CPU chega a 11 a 23 tokens/s (placa irmã), faixa parecida com a do NPU para TinyLlama. A Turing Pi também testou 7B em Q6_K e Q8_0 na RK1 de 32 GB, com 3,72 e 3,43 tokens/s. Ela afirma que a versão de 16 GB roda o 7B em Q6_K com folga, mas isso é inferência pelo pico de memória (8,68 GiB em Q4_K_M; 14,78 GiB em Q8_0), não medição numa placa de 16 GB [placa irmã: Turing Pi RK1].
 
@@ -192,6 +192,23 @@ Observações: o artigo diz que a medição é inferência GGUF no CPU do RK3588
 **Latências [placa irmã: Orange Pi 5 Plus, RK3588]:**
 - yolov8n: **20–25 ms** numa revisão mais nova da documentação, e **25–40 ms** numa revisão mais antiga. A divergência é registrada; use como ordem de grandeza.
 - yolo-nas s (3 núcleos): cerca de **25–30 ms**, segundo a documentação do Frigate.
+
+**Tabela oficial do rknn_model_zoo [oficial, placa não identificada]:** o README do `airockchip/rknn_model_zoo` traz FPS de YOLO em INT8, entrada 640×640, na coluna "RK3588 @single_core" (um núcleo da NPU). A tabela não diz data, versão de runtime nem se o tempo inclui pré e pós-processamento. A coluna de milissegundos é conversão minha (1000 ÷ FPS), não medição:
+
+| Modelo | FPS (um núcleo) | ms por inferência (conversão) |
+|---|---|---|
+| yolov5s | 49,1 | 20,4 |
+| yolov5n | 84,6 | 11,8 |
+| yolov8n | 76,3 | 13,1 |
+| yolov8s | 38,6 | 25,9 |
+| yolo11n | 64,0 | 15,6 |
+| yolo11s | 34,6 | 28,9 |
+| yolov10n | 63,9 | 15,6 |
+| yolo26n | 55,0 | 18,2 |
+
+Os valores ficam perto dos do PhotonVision, mas as duas fontes não dizem se medem o mesmo intervalo de tempo. Fonte: https://raw.githubusercontent.com/airockchip/rknn_model_zoo/main/README.md
+
+Jeff Geerling não tem entrada de Orange Pi nem de RK3588 no README do ai-benchmarks, lido em 03/11/2026 (https://github.com/geerlingguy/ai-benchmarks). Na issue da Max no sbc-reviews (https://github.com/geerlingguy/sbc-reviews/issues/49) não há número de LLM nem de NPU. O único comentário sobre a NPU, de 09/05/2025, pede esse teste.
 
 **Na Max:** não achei latência de YOLO medida na própria Max. O autor da review mediu ResNet18 INT8 (não YOLO) em **4,09 ms** de média (mínimo 4,02, máximo 4,43; 10 rodadas após 2 de aquecimento), o que dá cerca de **244 FPS** [comunidade/Max]. Esse número é de ResNet18, então não vale como estimativa de YOLO.
 
@@ -228,6 +245,7 @@ Limitação de armazenamento [comunidade/Max]: o modelo de TinyLlama convertido 
 7. **LPDDR4X ou LPDDR5 na Max:** resolvido. O manual oficial diz LPDDR5 em 4, 8 e 16 GB [oficial, manual v1.3, p. 11-12]. A review que disse LPDDR4X-2133 está errada nesse ponto.
 8. **Driver rocket no mainline:** resolvido. O 6.18 é a versão em que a pasta existe e a 6.17 não tem a pasta (seção 5.2). O relato do Armbian sobre 6.17 não bate com o repositório.
 9. **Versão do driver rknpu:** resolvida para o RKLLM 1.3.1, que exige **v0.9.8** [oficial, SDK RKLLM 1.3.1, seção 2.4]. O manual pede 0.9.6 para o capítulo de RKLLM dele, e a review usou RKLLM 1.2.2 com driver 0.9.8. A versão de RKLLM do manual não é nomeada, então a diferença não prova conflito entre versões.
+10. **YOLO no RK3588:** o PhotonVision dá 15 a 23 ms (placa irmã) e a tabela do rknn_model_zoo dá 11,8 a 28,9 ms (conversão de FPS, um núcleo, sem placa identificada). As fontes não dizem se medem o mesmo intervalo, e nenhuma é da Max. Use como faixa, não como valor.
 
 ---
 
@@ -246,9 +264,9 @@ Limitação de armazenamento [comunidade/Max]: o modelo de TinyLlama convertido 
 ## 11. O que não consegui confirmar
 
 - Número de tokens/s de **qualquer LLM medido numa Max** além do TinyLlama 1.1B (review) e de Phi-3 3,8B e Gemma 2B (manual, p. 424). Para os demais modelos da tabela do manual, o PDF não permite atribuir os valores.
-- Medição de **Ollama** em RK3588 (nem na Max). Procurei em buscas gerais, em Orange Pi 5 Max e no artigo da Turing Pi, sem resultado.
-- Medição de **llama.cpp** numa Max (só uma placa irmã, com 4 threads).
-- Latência de **YOLO** na própria Max (só placa irmã: Orange Pi 5 no PhotonVision e Orange Pi 5 Plus no Frigate, com revisões de docs que divergem).
+- Medição de **Ollama** em RK3588 (nem na Max). Procurei em buscas gerais, em Orange Pi 5 Max, no artigo da Turing Pi e nas issues do ollama/ollama, sem resultado (as issues só pedem suporte ao NPU).
+- Medição de **llama.cpp** numa Max (só placas irmãs: RK1 com 4 threads, e a issue #722 de 2023, com Orange Pi 5 de 16 GB ou placa não informada).
+- Latência de **YOLO** na própria Max (só placa irmã: Orange Pi 5 no PhotonVision e Orange Pi 5 Plus no Frigate, com revisões de docs que divergem; a tabela do rknn_model_zoo não identifica a placa).
 - Lista completa de **operadores sem suporte** no RKNN-Toolkit2. Procurei no README e no changelog do v2.5.0.
 - Se o **rocket** roda modelos RKLLM ou RKNN (não encontrei ligação na documentação do kernel nem no Mesa).
 - Texto do artigo da Phoronix sobre o **rocket** e a versão do Mesa (site com 403; Web Archive não abriu pela ferramenta).
@@ -279,6 +297,11 @@ Fontes abertas diretamente nesta revisão (03/11/2026):
 - https://raw.githubusercontent.com/airockchip/rknn-llm/main/doc/Rockchip_RKLLM_SDK_EN_1.3.1.pdf (SDK RKLLM 1.3.1, seção 2.4: driver v0.9.8 e comando de verificação)
 - https://github.com/airockchip/rknn-llm/tree/main/rknpu-driver (listagem do pacote rknpu_driver_0.9.8_20241009.tar.bz2, sem extrair)
 - https://docs.photonvision.org/en/latest/docs/benchmarks/rknn-model-benchmarks.html (YOLO no RKNN, Orange Pi 5 com RK3588)
+- https://raw.githubusercontent.com/airockchip/rknn_model_zoo/main/README.md (tabela de desempenho de YOLO em FPS, RK3588 com um núcleo)
+- https://github.com/geerlingguy/ai-benchmarks (README: sem entradas de Orange Pi ou RK3588)
+- https://github.com/geerlingguy/sbc-reviews/issues/49 (issue da Orange Pi 5 Max, com comentários)
+- https://github.com/ggml-org/llama.cpp/issues/722 (RK3588 perf: relatos em Orange Pi 5 e RK3588S, sem Max)
+- https://github.com/ollama/ollama/issues/5001 (pedido de suporte ao NPU da RK3588, sem medição)
 
 Fontes vistas só em resultados de busca (não abertas; citadas pelo nome, sem URL): CNX Software (release do RKLLM, 15/07/2024, e lançamento da Orange Pi 5 Max, 01/08/2024); documentação do Frigate espelhada em git (latências de YOLO); DietPi e Armbian (versões de driver e rocket); Phoronix (artigo sobre o rocket, só título); Hugging Face (conversão RKLLM de Llama 3.2 3B, sem número de tokens/s); TechSpot (6 TOPS e até 16 GB).
 

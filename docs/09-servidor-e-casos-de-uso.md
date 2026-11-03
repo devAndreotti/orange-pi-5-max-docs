@@ -53,9 +53,11 @@ A velocidade teórica de 2,5 Gb/s dá cerca de 280 MB/s úteis (estimativa minha
 - Verificação, no host: `sudo /usr/lib/jellyfin-ffmpeg/ffmpeg -v debug -init_hw_device rkmpp=rk -init_hw_device opencl=ocl@rk`. Para ver a carga do VPU durante um transcode, a página indica ler `/proc/mpp_service/load` [oficial, Jellyfin].
 - A página oficial não fala em fallback silencioso para software. Para confirmar que o hardware está em uso, use o comando de verificação e a leitura da carga do VPU durante a reprodução.
 - Tone mapping de HDR para SDR (OpenCL) só é suportado no RK3588 [oficial, Jellyfin].
-- Relato de Max, 2024: um usuário de Orange Pi 5 Max, com Jellyfin em Docker (imagem `jellyfin/jellyfin`) e kernel 6.1.43-rockchip-rk3588, viu a transcodificação falhar em clientes Android e PC. A reprodução direta funcionava. No log, o erro era `av1_rkmpp ... Failed to init MPP context` ao decodificar AV1. No fórum, um membro da equipe apontou que o nó `av1d` vem com `status = "disabled"` na árvore de dispositivos da imagem da Orange Pi. O usuário afirmou ter ativado o nó e gerado uma imagem própria, em 04/09/2024, sem confirmação de terceiros [comunidade/Max, thread do fórum Jellyfin, posts 5, 19, 26 e 27]. Não há relato desse caso para H.264 ou HEVC. A documentação oficial não trata desse caso. Procurei no fórum da Armbian por busca web e não achei thread sobre isso.
+- Relato de Max, 2024: um usuário de Orange Pi 5 Max, com Jellyfin em Docker (imagem `jellyfin/jellyfin`) e kernel 6.1.43-rockchip-rk3588, viu a transcodificação falhar em clientes Android e PC. A reprodução direta funcionava. O log mostra `av1_rkmpp ... Failed to init MPP context` ao decodificar um arquivo AV1 de 3840x2160, com saída em H.264 (`h264_rkmpp`). O caso é de entrada AV1, não de H.264 ou HEVC. Na thread, um membro da equipe perguntou se a imagem tinha o nó `av1d` habilitado e depois disse que o nó falta no código-fonte de kernel da Orange Pi [comunidade/Max, thread do fórum Jellyfin, posts 9 e 19]. Nos posts de 03 e 04/09/2024, perto do fim da thread, o próprio usuário viu `status = "disabled"` no nó `av1d` da DTS da imagem que usava, gerou uma imagem própria e disse ter corrigido o problema. Não há confirmação de terceiros, e a documentação oficial não trata desse caso. Procurei no fórum da Armbian por busca web e não achei thread sobre isso.
 - Outros relatos do jellyfin-ffmpeg: a issue #642 (RK3588, Jellyfin 10.11.3, falha em alguns arquivos) foi fechada em 01/12/2025 e confirmada como resolvida por quem reportou; ela não cita a Max [comunidade/RK3588, https://github.com/jellyfin/jellyfin-ffmpeg/issues/642]. A issue #765 (VP9 em RK3588) foi fechada em 11/09/2026, mas o autor corrigiu dados da própria tabela e a conclusão não está confirmada [não confirmado]. A busca nas issues do nyanmisaka/ffmpeg-rockchip não achou relato de Max nem de RK3588 com Jellyfin.
-- Recomendação: antes de depender do transcode, rode o comando de verificação e teste um arquivo em H.264 e um em HEVC com o cliente que você mais usa. Se o AV1 falhar com `Failed to init MPP context`, o relato único indica problema da árvore de dispositivos da imagem, não do Docker.
+- Medição na Max: a review aberta da Max (tinycomputers) não mede transcodificação. Diz que a GPU Mali-G610 não foi testada a fundo, mas que a placa tem codificação e decodificação de vídeo por hardware [comunidade/Max, review, https://tinycomputers.io/posts/rk3588-orange-pi-5-max-review.md]. Não achei números de H.264 ou HEVC numa Max.
+- H.264 e HEVC em RK3588, sem Max (relatos no ffmpeg-rockchip): a issue #185, aberta em 27/04/2025, transcodifica H.264 1080p50 de câmera para `hevc_rkmpp` com movimento truncado e quadros duplicados (`dup=90` em 1074 quadros), e o problema não ocorre com decodificação por software [placa irmã: RK3588, modelo não informado]. A issue #251 (criada em 06/02/2026, fechada) mostra artefatos e corrupção verde na saída de `h264_rkmpp` [placa irmã: Orange Pi 5 Plus]. A issue #220 (fechada) mostra `h264_rkmpp` com captura v4l2 caindo para 0,2 fps no log e 320 quadros descartados [placa irmã: RK3588, Tronlong]. Nenhuma das três cita a Max.
+- Recomendação: antes de depender do transcode,
 
 ## 4. Frigate e NPU
 
@@ -67,7 +69,7 @@ A velocidade teórica de 2,5 Gb/s dá cerca de 280 MB/s úteis (estimativa minha
 - A página manda mapear para o contêiner `/dev/dri`, `/dev/dma_heap`, `/dev/rga`, `/dev/mpp_service` e `/sys` em somente leitura, com privilégio no primeiro teste e depois as opções de segurança indicadas [oficial, Frigate].
 - A seção não cita a biblioteca `librknnrt` nem separa o RK3588 das outras placas Rockchip. Quanto à biblioteca, fica [não confirmado]; a seção vale para a família Rockchip.
 - O modelo padrão é baixado do GitHub no primeiro início e fica em cache, depois funciona offline [oficial, Frigate]. O primeiro boot precisa de internet.
-- Medição: uma review da Max roda o TinyLlama 1.1B quantizado a cerca de 20 tokens/s pela NPU (três execuções: 20,27, 20,04 e 20,40) [comunidade/Max, review]. Isso mostra que a NPU funciona no sistema testado, mas não é benchmark de visão computacional. Não achei medição de Frigate na Max.
+- Medição: uma review da Max roda o TinyLlama 1.1B quantizado a cerca de 20 tokens/s pela NPU (três execuções: 20,27, 20,04 e 20,40) [comunidade/Max, review]. Isso mostra que a NPU funciona no sistema testado, mas não é benchmark de visão computacional. Não achei medição de Frigate na Max. Latências de YOLO em RK3588, sem Max, estão na seção 7 do documento 08.
 - Recomendação: gravação contínua vai desgastar um microSD; use NVMe ou HD para gravação.
 
 ## 5. Home Assistant
@@ -139,9 +141,9 @@ Recomendação: usar zram para swap, deixar log2ram ou log em RAM com tamanho ad
 ## 12. Divergências entre fontes
 
 - **Memória da Max.** O manual v1.3 diz LPDDR5 em versões de 4, 8 e 16 GB [oficial, manual v1.3, p. 11-12]. A review diz LPDDR4X-2133 [comunidade/Max, review]. Vale o manual: LPDDR5. Sobre ECC, ver seção 10.
-- **Velocidade do NVMe.** A review reporta 5,7 GB/s sem método; o limite teórico do PCIe 3.0 x4 é cerca de 3,9 GB/s. Não confirmada.
+- **Velocidade do NVMe.** Na Max, o iozone sem cache deu 1,04 GB/s de leitura e 2,26 GB/s de escrita (sbc-reviews, issue 49). O limite teórico do PCIe 3.0 x4 é cerca de 3,9 GB/s. Os 5,7 GB/s de outra review passam desse limite e não valem como medição.
 - **Boot.** O manual mostra U-Boot gravado na SPI Flash com `rkspi_loader.img` [oficial, manual v1.3, p. 65] e uma imagem de exemplo com Linux 5.10.160 [oficial, manual v1.3, p. 66]. Isso indica bootloader e kernel de fornecedor. Não confirmei se a placa é "mainline" em algum sentido, porque o manual não usa esse termo.
-- **Jellyfin.** A documentação oficial recomenda RK3588. O relato de 2024 da Max falhou no AV1, por `av1d` desativado na DTS da imagem, e não cobre H.264 ou HEVC [oficial x comunidade/Max]. A causa de AV1 foi apontada no fórum; o ajuste do usuário não foi confirmado por terceiros.
+- **Jellyfin.** A documentação oficial recomenda RK3588. O relato de 2024 da Max falhou no AV1, possivelmente por `av1d` desativado na DTS da imagem (hipótese do usuário, não confirmada), e não cobre H.264 ou HEVC [oficial x comunidade/Max]. No fórum, um membro da equipe achou o nó `av1d` ausente no código-fonte de kernel da Orange Pi; o usuário viu `status = "disabled"` na DTS da própria imagem. O ajuste dele não foi confirmado por terceiros.
 - **k3s.** Relatos divergem entre tentativa com Fedora CoreOS (falha) e uso com kernel BSP no Armbian (funciona) [placas irmãs]. A documentação oficial do k3s não resolve isso.
 
 ## 13. O que ainda não consegui confirmar
@@ -156,7 +158,7 @@ Recomendação: usar zram para swap, deixar log2ram ou log em RAM com tamanho ad
 - Procedimento de atualização sem perda de sistema na Max.
 - Queda de energia e no-break com a Max.
 - ECC e vias PCIe completas da Max.
-- Transcodificação do Jellyfin na Max: o relato de 2024 aponta AV1 com `av1d` desativado; não achei confirmação de que o ajuste funcionou, nem de H.264 e HEVC na Max.
+- Transcodificação do Jellyfin na Max: o relato de 2024 aponta falha em AV1, com `av1d` apontado como desativado na DTS de uma imagem; não achei confirmação de que o ajuste funcionou, nem de H.264 e HEVC na Max. A review da Max não mede transcodificação.
 
 ## Fontes
 
@@ -178,6 +180,9 @@ Páginas abertas nesta revisão:
 - Fórum do Jellyfin, thread com relato da Max (páginas 1 a 3): https://forum.jellyfin.org/t-solved-rk3588-hardware-acceleration
 - jellyfin-ffmpeg, issue #642 (RK3588, resolvida): https://github.com/jellyfin/jellyfin-ffmpeg/issues/642
 - jellyfin-ffmpeg, issue #765 (VP9 em RK3588, contestada): https://github.com/jellyfin/jellyfin-ffmpeg/issues/765
+- ffmpeg-rockchip, issue #185 (H.264 para HEVC com quadros duplicados, RK3588, aberta): https://github.com/nyanmisaka/ffmpeg-rockchip/issues/185
+- ffmpeg-rockchip, issue #251 (artefatos do h264_rkmpp em Orange Pi 5 Plus, fechada): https://github.com/nyanmisaka/ffmpeg-rockchip/issues/251
+- ffmpeg-rockchip, issue #220 (h264_rkmpp com captura v4l2 em RK3588, fechada): https://github.com/nyanmisaka/ffmpeg-rockchip/issues/220
 - HAOS, configuração generic-aarch64: https://github.com/home-assistant/operating-system/blob/main/buildroot-external/configs/generic_aarch64_defconfig
 - HAOS, placa arm-uefi/generic-aarch64: https://github.com/home-assistant/operating-system/blob/main/buildroot-external/board/arm-uefi/generic-aarch64/meta
 - Canaltech, LarkBox X 2023 com N100 (lançamento, 23/05/2023): https://canaltech.com.br/produtos/mini-pc-chines-de-us-200-tem-intel-n100-12-gb-de-ram-e-ssd-de-512-gb-250524/

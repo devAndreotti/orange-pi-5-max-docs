@@ -23,6 +23,7 @@ Este documento descreve o hardware da Orange Pi 5 Max, uma placa de desenvolvime
 | Ventoinha e RTC | Ventoinha: 5 V, 2 pinos, 1,25 mm. RTC: 3 V, 2 pinos, 1,25 mm |
 | Dimensões | 89 x 57 x 1,6 mm |
 | Peso | 62 g |
+| Furos de fixação | 4 furos de 2,7 mm, 58 × 49 mm entre centros, a mesma furação do Raspberry Pi |
 
 Pontos de atenção para quem vai usar a placa:
 
